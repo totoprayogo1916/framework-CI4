@@ -579,8 +579,10 @@ if (! function_exists('url_title'))
 			'\s+'                    => $separator,
 			'(' . $qSeparator . ')+' => $separator,
 		];
+		// make all dashes/underscores into separator
+		$separatorConvert = $separator === '-' ? '_' : '-';
 
-		$str = strip_tags($str);
+		$str = strip_tags(preg_replace('![' . preg_quote($separatorConvert) . ']+!u', $separator, $str));
 		foreach ($trans as $key => $val)
 		{
 			$str = preg_replace('#' . $key . '#iu', $val, $str);

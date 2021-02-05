@@ -1237,32 +1237,60 @@ class URLHelperTest extends \CodeIgniter\Test\CIUnitTestCase
 	//--------------------------------------------------------------------
 	// Test url_title
 
-	public function testUrlTitle()
+	public function urlTitleProvider()
 	{
-		$words = [
-			'foo bar /'       => 'foo-bar',
-			'\  testing 12'   => 'testing-12',
-			'Éléphant de PHP' => 'éléphant-de-php',
+		// input, expected, separator, lowercase
+		return [
+			[
+				'foo bar /',
+				'foo-bar',
+			],
+			[
+				'\  testing 12',
+				'testing-12',
+			],
+			[
+				'Éléphant de PHP',
+				'éléphant-de-php',
+				'-',
+				true,
+			],
+			[
+				'_foo bar_',
+				'foo_bar',
+				'_',
+			],
+			[
+				'_What\'s wrong with CSS?_',
+				'Whats_wrong_with_CSS',
+				'_',
+			],
+			[
+				'Éléphant de PHP',
+				'Éléphant_de_PHP',
+				'_',
+			],
+			[
+				'How to use url_title() function?',
+				'how-to-use-url-title-function',
+				'-',
+				true,
+			],
+			[
+				'Welcome to the chat-room',
+				'welcome_to_the_chat_room',
+				'_',
+				true,
+			],
 		];
-
-		foreach ($words as $in => $out)
-		{
-			$this->assertEquals($out, url_title($in, '-', true));
-		}
 	}
 
-	public function testUrlTitleExtraDashes()
+	/**
+	 * @dataProvider urlTitleProvider
+	 */
+	public function testUrlTitle(string $input, string $expected, string $separator = '-', bool $lowercase = false)
 	{
-		$words = [
-			'_foo bar_'                 => 'foo_bar',
-			'_What\'s wrong with CSS?_' => 'Whats_wrong_with_CSS',
-			'Éléphant de PHP'           => 'Éléphant_de_PHP',
-		];
-
-		foreach ($words as $in => $out)
-		{
-			$this->assertEquals($out, url_title($in, '_'));
-		}
+		$this->assertSame($expected, url_title($input, $separator, $lowercase));
 	}
 
 	//--------------------------------------------------------------------
@@ -1270,8 +1298,6 @@ class URLHelperTest extends \CodeIgniter\Test\CIUnitTestCase
 
 	public function testMbUrlTitle()
 	{
-		helper('text');
-
 		$words = [
 			'foo bar /'       => 'foo-bar',
 			'\  testing 12'   => 'testing-12',
@@ -1287,8 +1313,6 @@ class URLHelperTest extends \CodeIgniter\Test\CIUnitTestCase
 
 	public function testMbUrlTitleExtraDashes()
 	{
-		helper('text');
-
 		$words = [
 			'_foo bar_'                 => 'foo_bar',
 			'_What\'s wrong with CSS?_' => 'Whats_wrong_with_CSS',
