@@ -1243,6 +1243,7 @@ class URLHelperTest extends \CodeIgniter\Test\CIUnitTestCase
 			'foo bar /'       => 'foo-bar',
 			'\  testing 12'   => 'testing-12',
 			'Éléphant de PHP' => 'éléphant-de-php',
+			'Example: with dash (-) and underscore ( _ )' => 'Example-with-dash-and-underscore'
 		];
 
 		foreach ($words as $in => $out)
