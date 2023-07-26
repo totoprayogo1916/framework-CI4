@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Dart Sass
         run: |
-          npm install --global node-sass
+          npm install --global sass node-sass
           sass --version
 
       - name: Run Dart Sass
