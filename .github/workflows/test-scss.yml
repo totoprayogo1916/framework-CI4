@@ -43,11 +43,11 @@ jobs:
 
       - name: Install Dart Sass
         run: |
-          npm install --global sass
+          npm install --global node-sass
           sass --version
 
       - name: Run Dart Sass
-        run: sass --no-source-map admin/css/debug-toolbar/toolbar.scss system/Debug/Toolbar/Views/toolbar.css
+        run: node-sass admin/css/debug-toolbar/toolbar.scss system/Debug/Toolbar/Views/toolbar.css --indent-type space --indent-width 4 --output-style expanded --linefeed lf
 
       - name: Check for changed CSS files
         run: |
