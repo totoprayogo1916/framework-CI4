@@ -2,7 +2,7 @@ name: Auto Comment Conflicts
 
 on:
   schedule:
-    - cron: '15 * * * *'
+    - cron: '1 * * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
