@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Add stale label
         run: gh pr status --conflict-status --json mergeable
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
