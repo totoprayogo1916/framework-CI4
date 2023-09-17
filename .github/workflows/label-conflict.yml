@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add stale label
-        run: gh pr status --conflict-status -json mergeable
+        run: gh pr status --conflict-status --json mergeable
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
