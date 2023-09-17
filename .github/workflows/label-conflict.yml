@@ -27,8 +27,7 @@ jobs:
     steps:
       - id: getPR
         run: |
-          gh pr list --limit 100 --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url'
-          echo "PRsList=$GH" >> $GITHUB_OUTPUT
+          echo "PRsList=${gh pr list --limit 100 --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url'}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
