@@ -41,12 +41,17 @@ jobs:
             if [ "$mergeable" == "CONFLICTING" ]; then
               echo "PR $number is $mergeable. URL: $url"
               echo "Running: gh pr comment $url --body 'please rebase'"
-              gh pr comment $url --body "please rebase"
+              gh pr comment $url --body "${{ env.COMMENT}}"
             fi
           done
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: echo ${{ toJson(steps.getPR.outputs.list) }}
+          COMMENT: >
+            :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
+            We detected conflicts in your PR against the base branch :speak_no_evil:<br>
+            You may want to sync :arrows_counterclockwise: your branch with upstream!<br>
+            Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
+      # - run: echo ${{ toJson(steps.getPR.outputs.list) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
