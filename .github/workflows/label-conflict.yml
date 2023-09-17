@@ -27,11 +27,11 @@ jobs:
 
       - id: getPR
         run: |
-          PR_LIST=$(gh pr list --json number,mergeable,url)
+          PR_LIST=$(gh pr list -L 100 --json number,mergeable,url)
           echo "list=$PR_LIST" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: echo ${{ steps.getPR.outputs.list }}
+      - run: echo ${{ toJson(steps.getPR.outputs.list) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
