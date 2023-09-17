@@ -22,15 +22,15 @@ jobs:
   get-pr:
     runs-on: ubuntu-22.04
     outputs:
-      PRs: ${{ steps.output.outputs.PRsList }}
+      PRs: ${{ steps.getPR.outputs.PRsList }}
 
     steps:
       - id: getPR
-        run: gh pr list --limit 100 --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url'
+        run: |
+          gh pr list --limit 100 --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url'
+          echo "PRsList=$GH" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - id: output
-        run: echo "PRsList=steps.getPR" >> $GITHUB_OUTPUT
 
   auto-comment-conflict:
     runs-on: ubuntu-20.04
