@@ -36,7 +36,13 @@ jobs:
             number=$(echo $decoded | jq -r '.number')
             url=$(echo $decoded | jq -r '.url')
 
-            echo "PR $number is $mergeable. URL: $url"
+            # echo "PR $number is $mergeable. URL: $url"
+
+            if [ "$mergeable" == "CONFLICTING" ]; then
+              echo "PR $number is $mergeable. URL: $url"
+              echo "Running: gh pr comment $url --body 'please rebase'"
+              gh pr comment $url --body "please rebase"
+            fi
           done
         env:
           GITHUB_TOKEN: ${{ github.token }}
