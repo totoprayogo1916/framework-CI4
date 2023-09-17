@@ -28,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: ${{ fromJSON(steps.list-pr.outputs.list) }}
+      - run: ${{ toJSON(steps.list-pr.outputs.list) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
