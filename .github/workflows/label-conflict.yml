@@ -27,8 +27,7 @@ jobs:
         run: |
           for i in "$(gh pr list --json mergeable)"
           do
-            echo toJson($i)
-
+            {{ toJson($i) }}
           done
         # run: gh pr list --json mergeable
         # run: echo "list=${gh pr list --json mergeable}" >> $GITHUB_OUTPUT
