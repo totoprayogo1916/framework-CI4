@@ -1,52 +1,26 @@
-name: Auto Comment Conflicts
+name: Check PR State
 
 on:
-  # schedule:
-    # - cron: '0 0 * * *'
   pull_request:
-  #   branches:
-  #     - 'develop'
-  #     - '4.*'
-    # types:
-    #   - labeled
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
-permissions:
-    contents: read
-    pull-requests: write
 
 jobs:
-  get-pr:
-    runs-on: ubuntu-22.04
-    outputs:
-      PRs: ${{ steps.getPR.outputs.PRsList }}
+  check_pr_state:
+    runs-on: ubuntu-latest
 
     steps:
-      - id: getPR
-        run:
-          echo "PRsList=${gh pr list --json number,mergeable,url}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Set up GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
 
-  auto-comment-conflict:
-    runs-on: ubuntu-20.04
-    needs: get-pr
-    steps:
+      - name: Get PR State
+        id: pr_state
+        run: |
+          PR_STATE=$(gh pr list --json state)
+          echo "::set-output name=pr_state::$PR_STATE"
 
-      - run: echo ${{ toJson(needs.get-pr.outputs.PRs) }}
-
-      # - name: Add comment for PR with conflict
-      #   uses: peter-evans/create-or-update-comment@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       :wave: Hi, @${{ github.event.pull_request.user.login }}!
-
-      #       We detected conflicts in your PR against the base branch :speak_no_evil:
-      #       You may want to sync :arrows_counterclockwise: your branch with upstream!
-
-      #       Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
+      - name: Display PR State
+        run: |
+          echo "PR State: ${{ steps.pr_state.outputs.pr_state }}"
