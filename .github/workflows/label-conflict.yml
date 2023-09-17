@@ -24,12 +24,12 @@ jobs:
     steps:
       - name: Get All PR
         id: list-pr
-        # run: echo "list=${{gh pr list --json mergeable}}" >> $GITHUB_OUTPUT
+        # run: echo "list=${gh pr list --json mergeable}" >> $GITHUB_OUTPUT
         run: echo "list=${{github}}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: ${{ toJSON(steps.list-pr.outputs.list) }}
+      - run: echo ${{ toJSON(steps.list-pr.outputs.list) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
