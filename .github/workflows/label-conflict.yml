@@ -1,13 +1,8 @@
 name: Auto Comment Conflicts
+
 on:
   schedule:
     - cron: '0 0 * * *'
-  # pull_request:
-  #   branches:
-  #     - 'develop'
-  #     - '4.*'
-    # types:
-    #   - labeled
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -19,22 +14,37 @@ permissions:
 
 jobs:
   auto-comment-conflict:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: Add stale label
-        run: gh pr status --conflict-status --json mergeable
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: getPR
+        run: |
+          echo $(gh pr list -L 100 --json number,mergeable,url,labels) > input.json
+
+          # Loop through the JSON array
+          for item in $(cat input.json | jq -r '.[] | @base64'); do
+            decoded=$(echo $item | base64 --decode)
+            mergeable=$(echo $decoded | jq -r '.mergeable')
+            number=$(echo $decoded | jq -r '.number')
+            url=$(echo $decoded | jq -r '.url')
+            labels=$(echo $decoded | jq -r '.labels[].name')
+
+            # echo "PR $number is $mergeable. URL: $url"
+
+            if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
+              # add label "stale"
+              gh pr edit $url --add-label "stale"
+
+              # add comment
+              gh pr comment $url --body "${{ env.COMMENT}}"
+            fi
+          done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Add comment for PR with conflict
-      #   uses: peter-evans/create-or-update-comment@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       :wave: Hi, @${{ github.event.pull_request.user.login }}!
-
-      #       We detected conflicts in your PR against the base branch :speak_no_evil:
-      #       You may want to sync :arrows_counterclockwise: your branch with upstream!
-
-      #       Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
+          GITHUB_TOKEN: ${{ github.token }}
+          COMMENT: >
+            :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
+            We detected conflicts in your PR against the base branch :speak_no_evil:<br>
+            You may want to sync :arrows_counterclockwise: your branch with upstream!<br>
+            Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
