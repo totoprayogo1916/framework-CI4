@@ -1,8 +1,9 @@
 name: Auto Comment Conflicts
+
 on:
-  schedule:
-    - cron: '0 0 * * *'
-  # pull_request:
+  # schedule:
+    # - cron: '0 0 * * *'
+  pull_request:
   #   branches:
   #     - 'develop'
   #     - '4.*'
@@ -21,10 +22,13 @@ jobs:
   auto-comment-conflict:
     runs-on: ubuntu-latest
     steps:
-      - name: Add stale label
-        run: gh pr status --conflict-status --json mergeable
+      - name: Get All PR
+        id: list-pr
+        run: echo "{list}={gh pr list --json mergeable}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: ${{ fromJSON(steps.list-pr.outputs) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
