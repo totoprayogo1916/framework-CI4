@@ -19,23 +19,21 @@ permissions:
     pull-requests: write
 
 jobs:
-  auto-comment-conflict:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get All PR
-        id: list-pr
-        run: |
-          for i in "$(gh pr list --json mergeable)"
-          do
-            {{ toJson($i) }}
-          done
-        # run: gh pr list --json mergeable
-        # run: echo "list=${gh pr list --json mergeable}" >> $GITHUB_OUTPUT
-        # run: echo "list=${{github}}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  get-pr:
+    runs-on: ubuntu-22.04
+    outputs:
+      PRs: ${{ steps.getPR.outputs.PRsList }}
 
-      # - run: echo ${{ toJSON(steps.list-pr.outputs.list) }}
+    steps:
+      - id: getPR
+        run: echo "PRsList={gh pr list --limit 100 --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url'}" >> $GITHUB_OUTPUT
+
+  auto-comment-conflict:
+    runs-on: ubuntu-20.04
+    needs: get-pr
+    steps:
+
+      - run: echo ${{ needs.get-pr.outputs.PRs }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
