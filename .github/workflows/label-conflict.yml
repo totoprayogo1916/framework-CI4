@@ -3,6 +3,9 @@ name: Check PR State
 on:
   pull_request:
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   check_pr_state:
     runs-on: ubuntu-latest
