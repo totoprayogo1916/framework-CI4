@@ -1,11 +1,11 @@
 name: Auto Comment Conflicts
 on:
-  # schedule:
-    # - cron: '0 0 * * *'
-  pull_request:
-    branches:
-      - 'develop'
-      - '4.*'
+  schedule:
+    - cron: '0 0 * * *'
+  # pull_request:
+  #   branches:
+  #     - 'develop'
+  #     - '4.*'
     # types:
     #   - labeled
 
