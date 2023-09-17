@@ -36,7 +36,7 @@ jobs:
     needs: get-pr
     steps:
 
-      - run: echo ${{ needs.get-pr.outputs.PRs }}
+      - run: echo ${{ toJson(needs.get-pr.outputs.PRs) }}
 
       # - name: Add comment for PR with conflict
       #   uses: peter-evans/create-or-update-comment@v3
