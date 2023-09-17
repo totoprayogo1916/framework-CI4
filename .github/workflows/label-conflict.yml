@@ -17,8 +17,7 @@ concurrency:
 permissions:
     contents: read
     pull-requests: write
-env:
-  GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   get-pr:
     runs-on: ubuntu-22.04
@@ -26,13 +25,11 @@ jobs:
       PRs: ${{ steps.getPR.outputs.PRsList }}
 
     steps:
-      - run: |
-          PR_STATUS=$(gh pr list --json state)
-          echo "::set-output name=pr_status::$PR_STATUS"
       - id: getPR
         run:
-          echo "PRsList=$(gh pr list --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url')" >> $GITHUB_OUTPUT
-
+          echo "PRsList=sdsd" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
   auto-comment-conflict:
     runs-on: ubuntu-20.04
