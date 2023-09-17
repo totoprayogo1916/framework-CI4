@@ -25,6 +25,9 @@ jobs:
       PRs: ${{ steps.getPR.outputs.PRsList }}
 
     steps:
+      - run: |
+          PR_STATUS=$(gh pr list --json state)
+          echo "::set-output name=pr_status::$PR_STATUS"
       - id: getPR
         run:
           echo "PRsList=$(gh pr list --json number,mergeable,url --jq '.[] | select(.mergeable == "CONFLICTING") | .url')" >> $GITHUB_OUTPUT
