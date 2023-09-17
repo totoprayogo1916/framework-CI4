@@ -27,8 +27,17 @@ jobs:
 
       - id: getPR
         run: |
-          PR_LIST=$(gh pr list -L 100 --json number,mergeable,url)
-          echo "list=$PR_LIST" >> $GITHUB_OUTPUT
+          echo $(gh pr list -L 100 --json number,mergeable,url) > input.json
+
+          # Loop through the JSON array
+          for item in $(cat input.json | jq -r '.[] | @base64'); do
+            decoded=$(echo $item | base64 --decode)
+            mergeable=$(echo $decoded | jq -r '.mergeable')
+            number=$(echo $decoded | jq -r '.number')
+            url=$(echo $decoded | jq -r '.url')
+
+            echo "PR $number is $mergeable. URL: $url"
+          done
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: echo ${{ toJson(steps.getPR.outputs.list) }}
