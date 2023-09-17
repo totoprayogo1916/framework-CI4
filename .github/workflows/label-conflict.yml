@@ -39,8 +39,10 @@ jobs:
             # echo "PR $number is $mergeable. URL: $url"
 
             if [ "$mergeable" == "CONFLICTING" ]; then
-              echo "PR $number is $mergeable. URL: $url"
-              echo "Running: gh pr comment $url --body 'please rebase'"
+              # add label "stale"
+              gh pr edit $url --add-label "stale"
+
+              # add comment
               gh pr comment $url --body "${{ env.COMMENT}}"
             fi
           done
