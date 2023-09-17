@@ -1,25 +1,56 @@
-name: Check PR State
+name: Auto Comment Conflicts
 
 on:
+  # schedule:
+    # - cron: '0 0 * * *'
   pull_request:
+  #   branches:
+  #     - 'develop'
+  #     - '4.*'
+    # types:
+    #   - labeled
 
-env:
-  GITHUB_TOKEN: ${{ github.token }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+    contents: read
+    pull-requests: write
 
 jobs:
-  check_pr_state:
-    runs-on: ubuntu-latest
+  get-pr:
+    runs-on: ubuntu-22.04
+    outputs:
+      PRs: ${{ steps.getPR.outputs.list }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get PR State
-        id: pr_state
-        run: |
-          PR_STATE=$(gh pr list --json state)
-          echo "::set-output name=pr_state::$PR_STATE"
+      - id: getPR
+        run:
+          PR_LIST= $(gh pr list --json number,mergeable,url)
+          echo "list=$PR_LIST" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Display PR State
-        run: |
-          echo "PR State: ${{ steps.pr_state.outputs.pr_state }}"
+  auto-comment-conflict:
+    runs-on: ubuntu-20.04
+    needs: get-pr
+    steps:
+
+      - run: echo ${{ toJson(needs.get-pr.outputs.PRs) }}
+
+      # - name: Add comment for PR with conflict
+      #   uses: peter-evans/create-or-update-comment@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     body: |
+      #       :wave: Hi, @${{ github.event.pull_request.user.login }}!
+
+      #       We detected conflicts in your PR against the base branch :speak_no_evil:
+      #       You may want to sync :arrows_counterclockwise: your branch with upstream!
+
+      #       Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
