@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Get All PR
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: Get PR List
         run: |
@@ -28,18 +32,21 @@ jobs:
       - name: 'Add label "stale" and comment'
         run: |
 
-          for pr in $(echo "pr_list.json" | jq -c '.[]'); do
-            # number=$(echo "$pr" | jq -r '.number')
-            author=$(echo "$pr" | jq -r '.author.login')
-            mergeable=$(echo "$pr" | jq -r '.mergeable')
-            labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
+          echo 'A'
 
-            if [ "$mergeable" == "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
-              url=$(echo "$pr" | jq -r '.url')
-              # gh pr edit $number --body "Automated action performed"
-              echo "$url by $author"
-            fi
-          done
+          # echo
+          # for pr in $(echo "pr_list.json" | jq -c '.[]'); do
+          #   # number=$(echo "$pr" | jq -r '.number')
+          #   author=$(echo "$pr" | jq -r '.author.login')
+          #   mergeable=$(echo "$pr" | jq -r '.mergeable')
+          #   labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
+
+          #   if [ "$mergeable" == "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
+          #     url=$(echo "$pr" | jq -r '.url')
+          #     # gh pr edit $number --body "Automated action performed"
+          #     echo "$url by $author"
+          #   fi
+          # done
 
 
       # - name: 'Remove Label "stale"'
