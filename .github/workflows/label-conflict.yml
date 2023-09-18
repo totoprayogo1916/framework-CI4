@@ -25,9 +25,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Add label "stale" and comment'
+        env:
+          PR_LIST: ${{ toJson(steps.PR-list.outputs.pr_list) }}
         run: |
 
-          echo ${{ toJson(steps.PR-list.outputs.pr_list) }}
+          for pr in $PR_LIST; do
+
+            echo pr.mergeable
+
+            # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
+            # fi
+
+          done
 
           # echo
           # for pr in $(echo "pr_list.json" | jq -c '.[]'); do
