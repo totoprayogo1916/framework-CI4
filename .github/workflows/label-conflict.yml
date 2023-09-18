@@ -3,7 +3,7 @@ name: Auto Comment Conflicts
 on:
   # pull_request:
   schedule:
-  - cron: '*/1 * * * *'
+  - cron: '*/15 * * * *'
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  prList:
+  auto-comment-conflict:
     runs-on: ubuntu-22.04
 
     steps:
@@ -21,9 +21,9 @@ jobs:
 
       - name: Get PR List
         run: |
-          gh pr list -L 100 --json number,mergeable,url,labels,author > pr_list.json
+          gh pr list -L 100 --json mergeable,url,labels,author > pr_list.json
 
-      - name: Add label "stale" and comment
+      - name: 'Add label "stale" and comment'
         run: |
           for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
@@ -38,7 +38,7 @@ jobs:
             fi
           done
 
-      - name: Remove Label "stale"
+      - name: 'Remove Label "stale"'
         run: |
           for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
