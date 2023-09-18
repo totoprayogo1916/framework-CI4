@@ -27,7 +27,7 @@ jobs:
       - name: 'Add label "stale" and comment'
         run: |
 
-          echo ${{ fromJson(steps.PR-list.outputs.pr_list) }}
+          echo ${{ toJson(steps.PR-list.outputs.pr_list) }}
 
           # echo
           # for pr in $(echo "pr_list.json" | jq -c '.[]'); do
