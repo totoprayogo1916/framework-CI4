@@ -40,17 +40,8 @@ jobs:
             fi
           done
 
-  auto-remove-label-conflict:
-    runs-on: ubuntu-22.04
-    needs: prList
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Remove Label "stale"
         run: |
-          echo ${{needs.prList.outputs.PR_LIST}} > pr_list.json
           for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
             mergeable=$(echo $decoded | jq -r '.mergeable')
