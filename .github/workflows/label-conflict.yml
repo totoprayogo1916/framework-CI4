@@ -35,10 +35,10 @@ jobs:
             url=$(echo $pr | jq -r '.url')
             author=$(echo "$pr" | jq -r '.author.login')
 
-            echo "$url is $mergeable by $author with labels";
 
           done
 
+        # echo "$url is $mergeable by $author with labels";
         # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
         # fi
         # echo
