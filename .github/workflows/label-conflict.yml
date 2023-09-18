@@ -22,7 +22,11 @@ jobs:
         id: getPR
         run: |
           echo "pr_list=$(gh pr list -L 100 --json number,mergeable,url,labels,author) > input.json" >> $GITHUB_OUTPUT
-
+  hh:
+    runs-on: ubuntu-22.04
+    needs: get-pr-list
+    steps:
+      - run: echo ${{get-pr-list.outputs.PRs}}
   # auto-comment-conflict:
   #   runs-on: ubuntu-22.04
   #   steps:
