@@ -32,7 +32,7 @@ jobs:
           IFS=$'\n' # Set Internal Field Separator to newline to handle array elements
 
           # Iterate through the PRs in PR_LIST
-          for pr in $PR_LIST; do
+          for pr in $(echo "$PR_LIST" | jq -c '.[]'); do
             # number=$(echo "$pr" | jq -r '.number')
             mergeable=$(echo "$pr" | jq -r '.mergeable')
             labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
