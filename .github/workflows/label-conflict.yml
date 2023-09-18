@@ -5,14 +5,15 @@ on:
   schedule:
   - cron: '*/1 * * * *'
 
+permissions:
+  contents: read
+      
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   prList:
     runs-on: ubuntu-22.04
-    outputs:
-      PR_LIST: ${{ steps.pr-json.outputs.PRs }}
 
     steps:
       - name: Checkout
@@ -21,9 +22,6 @@ jobs:
       - name: Get PR List
         run: |
           gh pr list -L 100 --json number,mergeable,url,labels,author > pr_list.json
-
-      - id: pr-json
-        run: echo "PRs=pr_list.json" >> $GITHUB_OUTPUT
 
       - name: Add label "stale" and comment
         run: |
