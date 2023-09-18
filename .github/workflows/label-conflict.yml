@@ -28,11 +28,43 @@ jobs:
         env:
           PR_LIST: ${{ steps.PR-list.outputs.pr_list }}
         run: |
-          for pr in $(echo "$PR_LIST" | jq -c '.[]'); do
-            mergeable=$(echo "$pr" | jq -r '.mergeable')
+          for item in $(echo "$PR_LIST" | jq -c '.[] | @base64'); do
+            pr=$(echo $item | base64 --decode)
+            mergeable=$(echo $pr | jq -r '.mergeable')
+            labels=$(echo $pr | jq -r '.labels[].name')
+            url=$(echo $pr | jq -r '.url')
             author=$(echo "$pr" | jq -r '.author.login')
-            url=$(echo "$pr" | jq -r '.url')
 
             echo "$url is $mergeable by $author with labels";
 
           done
+
+        # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
+        # fi
+        # echo
+        # for pr in $(echo "pr_list.json" | jq -c '.[]'); do
+        #   # number=$(echo "$pr" | jq -r '.number')
+        #   author=$(echo "$pr" | jq -r '.author.login')
+        #   mergeable=$(echo "$pr" | jq -r '.mergeable')
+        #   labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
+
+        #   if [ "$mergeable" == "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
+        #     url=$(echo "$pr" | jq -r '.url')
+        #     # gh pr edit $number --body "Automated action performed"
+        #     echo "$url by $author"
+        #   fi
+        # done
+
+
+      # - name: 'Remove Label "stale"'
+      #   run: |
+      #     for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
+      #       decoded=$(echo $item | base64 --decode)
+      #       mergeable=$(echo $decoded | jq -r '.mergeable')
+      #       labels=$(echo $decoded | jq -r '.labels[].name')
+      #       url=$(echo $decoded | jq -r '.url')
+
+      #       if [[ "$mergeable" != "CONFLICTING" && "$labels" == *"stale"* ]]; then
+      #         gh pr edit $url --remove-label "stale"
+      #       fi
+      #     done
