@@ -40,7 +40,7 @@ jobs:
             if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
               url=$(echo "$pr" | jq -r '.url')
               # Add "stale" label
-              gh pr label add $url --label "stale"
+              gh pr edit $url --add-label "stale"
 
               echo "$url is coflict"
 
