@@ -9,7 +9,7 @@ on:
 
 permissions:
   contents: read
-  repository-projects: read
+  pull-requests: read
 
 jobs:
   auto-check-conflict:
