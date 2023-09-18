@@ -25,7 +25,7 @@ jobs:
           JSON: $(gh pr list -L 100 --json mergeable,url,labels,author)
           # GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          echo "$JSON"
+          echo "gh pr list -L 100 --json mergeable,url,labels,author"
 
       - name: Get PR List
         run: |
