@@ -30,12 +30,12 @@ jobs:
         run: |
 
           for pr in $(echo "$PR_LIST" | jq -c '.[]'); do
-            mergeable=$(echo "$pr" | jq -r '.mergeable')
-            author=$(echo "$pr" | jq -r '.author.login')
+            mergeable=$(echo "$pr" | jq -r '.mergeable');
+            author=$(echo "$pr" | jq -r '.author.login');
             # labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
-            url=$(echo "$pr" | jq -r '.url')
+            url=$(echo "$pr" | jq -r '.url');
 
-            echo "$url is $mergeable by $author with labels"
+            echo "$url is $mergeable by $author with labels";
 
             # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
             # fi
