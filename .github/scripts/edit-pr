@@ -1,0 +1,5 @@
+#!/bin/bash
+if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
+    gh pr edit $1 --add-label "stale"
+    exit 0
+fi
