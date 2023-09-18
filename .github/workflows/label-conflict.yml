@@ -28,7 +28,7 @@ jobs:
         env:
           PR_LIST: ${{ steps.PR-list.outputs.pr_list }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+        run: >
 
           IFS=$'\n' # Set Internal Field Separator to newline to handle array elements
 
