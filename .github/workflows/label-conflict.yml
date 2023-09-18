@@ -3,7 +3,7 @@ name: Auto Comment Conflicts
 on:
   pull_request:
   # schedule:
-    # - cron: '0 0 * * *'
+  # - cron: '0 0 * * *'
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
@@ -44,7 +44,7 @@ jobs:
             labels=$(echo $decoded | jq -r '.labels[].name')
             author=$(echo $decoded | jq -r '.author.login')
 
-            echo "PR $number is $mergeable. URL: $url, Author is: $author"
+            # echo "PR $number is $mergeable. URL: $url, Author is: $author"
 
             if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
               # add label "stale"
@@ -55,7 +55,7 @@ jobs:
             fi
           done
         env:
-  #         GITHUB_TOKEN: ${{ github.token }}
+          # GITHUB_TOKEN: ${{ github.token }}
           COMMENT: >
             :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
             We detected conflicts in your PR against the base branch :speak_no_evil:<br>
