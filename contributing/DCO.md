@@ -17,4 +17,5 @@ By making a contribution to this project, I certify that:
     public and that a record of the contribution (including all personal
     information I submit with it, including my sign-off) is maintained
     indefinitely and may be redistributed consistent with this project
-    or the open source license(s) involved.
+    or the open source license(s)
+   involved.
