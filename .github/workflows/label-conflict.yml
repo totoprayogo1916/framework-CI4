@@ -33,8 +33,10 @@ jobs:
       - id: getPR
         run: |
 
+          echo ${{needs.get-pr-list.outputs.PRs}} > list.json
+
           # Loop through the JSON array
-          for item in $(${{needs.get-pr-list.outputs.PRs}} | jq -r '.[] | @base64'); do
+          for item in $(cat list.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
             mergeable=$(echo $decoded | jq -r '.mergeable')
             number=$(echo $decoded | jq -r '.number')
