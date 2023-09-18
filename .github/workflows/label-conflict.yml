@@ -29,8 +29,9 @@ jobs:
           PR_LIST: ${{ toJson(steps.PR-list.outputs.pr_list) }}
         run: |
 
-          for pr in $PR_LIST; do
+          for pr in $(echo "$PR_LIST" | jq -c '.[]'); do
             mergeable=$(echo "$pr" | jq -r '.mergeable')
+
             echo "$mergeable"
 
             # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
