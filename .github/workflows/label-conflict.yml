@@ -22,11 +22,6 @@ jobs:
         id: getPR
         run: |
           echo "pr_list=$(gh pr list -L 100 --json number,mergeable,url,labels,author) > input.json" >> $GITHUB_OUTPUT
-  hh:
-    runs-on: ubuntu-22.04
-    needs: get-pr-list
-    steps:
-      - run: echo ${{needs.get-pr-list.outputs.PRs}}
 
   auto-comment-conflict:
     runs-on: ubuntu-22.04
@@ -35,13 +30,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-
       - id: getPR
         run: |
-          # echo $(gh pr list -L 100 --json number,mergeable,url,labels,author) > input.json
+          echo ${{needs.get-pr-list.outputs.PRs}} > input.json
 
           # Loop through the JSON array
-          for item in $(cat ${{needs.get-pr-list.outputs.PRs}} | jq -r '.[] | @base64'); do
+          for item in $(cat input.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
             mergeable=$(echo $decoded | jq -r '.mergeable')
             number=$(echo $decoded | jq -r '.number')
@@ -49,7 +43,7 @@ jobs:
             labels=$(echo $decoded | jq -r '.labels[].name')
             author=$(echo $decoded | jq -r '.author.login')
 
-            # echo "PR $number is $mergeable. URL: $url"
+            echo "PR $number is $mergeable. URL: $url, Author is: $author"
 
             if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
               # add label "stale"
