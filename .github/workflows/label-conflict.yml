@@ -28,14 +28,24 @@ jobs:
         env:
           PR_LIST: ${{ steps.PR-list.outputs.pr_list }}
         run: |
-          for item in $(cat "$PR_LIST" | jq -c '.[] | @base64'); do
-            pr=$(echo $item | base64 --decode)
-            mergeable=$(echo $pr | jq -r '.mergeable')
-            labels=$(echo $pr | jq -r '.labels[].name')
-            url=$(echo $pr | jq -r '.url')
-            author=$(echo "$pr" | jq -r '.author.login')
 
+          IFS=$'\n' # Set Internal Field Separator to newline to handle array elements
 
+          # Iterate through the PRs in PR_LIST
+          for pr in $PR_LIST; do
+            # number=$(echo "$pr" | jq -r '.number')
+            mergeable=$(echo "$pr" | jq -r '.mergeable')
+            labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
+
+            echo "$mergeable with $labels"
+
+            # if [ "$mergeable" != "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
+              # Add "stale" label
+              # gh pr label add $number --label stale
+
+              # Add a comment
+              # gh pr comment $number --body "This PR has conflicts and has been labeled as stale."
+            # fi
           done
 
         # echo "$url is $mergeable by $author with labels";
