@@ -1,18 +1,19 @@
 name: Auto Comment Conflicts
 
 on:
-  # pull_request:
-  schedule:
-  - cron: '*/1 * * * *'
+  pull_request:
+  # schedule:
+  # - cron: '*/1 * * * *'
 
+permissions:
+  contents: read
+      
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   prList:
     runs-on: ubuntu-22.04
-    outputs:
-      PR_LIST: ${{ steps.pr-json.outputs.PRs }}
 
     steps:
       - name: Checkout
@@ -22,9 +23,6 @@ jobs:
         run: |
           gh pr list -L 100 --json number,mergeable,url,labels,author > pr_list.json
 
-      - id: pr-json
-        run: echo "PRs=pr_list.json" >> $GITHUB_OUTPUT
-
       - name: Add label "stale" and comment
         run: |
           for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
@@ -33,6 +31,8 @@ jobs:
             labels=$(echo $decoded | jq -r '.labels[].name')
             url=$(echo $decoded | jq -r '.url')
             author=$(echo $decoded | jq -r '.author.login')
+
+            echo "PR $number is $mergeable. URL: $url with Author: $author" 
 
             if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
               gh pr edit $url --add-label "stale"
