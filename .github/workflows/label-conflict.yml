@@ -1,50 +1,71 @@
 name: Auto Comment Conflicts
 
 on:
-  schedule:
-    - cron: '15 * * * *'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+  push:
+    branches:
+      - 'develop'
+      - '4.**'
 
 permissions:
-    contents: read
-    pull-requests: write
+  contents: read
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  auto-comment-conflict:
+  auto-check-conflict:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - id: getPR
+      - name: Get PR List
         run: |
-          echo $(gh pr list -L 100 --json number,mergeable,url,labels) > input.json
+          gh pr list -L 100 --json mergeable,url,labels,author > pr_list.json
 
-          # Loop through the JSON array
-          for item in $(cat input.json | jq -r '.[] | @base64'); do
-            decoded=$(echo $item | base64 --decode)
-            mergeable=$(echo $decoded | jq -r '.mergeable')
-            number=$(echo $decoded | jq -r '.number')
-            url=$(echo $decoded | jq -r '.url')
-            labels=$(echo $decoded | jq -r '.labels[].name')
+      - name: 'Add label "stale" and comment'
+        run: |
 
-            # echo "PR $number is $mergeable. URL: $url"
+          for pr in $(echo "pr_list.json" | jq -c '.[]'); do
+            # number=$(echo "$pr" | jq -r '.number')
+            author=$(echo "$pr" | jq -r '.author.login')
+            mergeable=$(echo "$pr" | jq -r '.mergeable')
+            labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
 
-            if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
-              # add label "stale"
-              gh pr edit $url --add-label "stale"
-
-              # add comment
-              gh pr comment $url --body "${{ env.COMMENT}}"
+            if [ "$mergeable" == "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
+              url=$(echo "$pr" | jq -r '.url')
+              # gh pr edit $number --body "Automated action performed"
+              echo "$url by $author"
             fi
           done
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          COMMENT: >
-            :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
-            We detected conflicts in your PR against the base branch :speak_no_evil:<br>
-            You may want to sync :arrows_counterclockwise: your branch with upstream!<br>
-            Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
+
+          # for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
+          #   decoded=$(echo $item | base64 --decode)
+          #   mergeable=$(echo $decoded | jq -r '.mergeable')
+          #   labels=$(echo $decoded | jq -r '.labels[].name')
+          #   # number=$(echo $decoded | jq -r '.number')
+          #   url=$(echo $decoded | jq -r '.url')
+          #   author=$(echo $decoded | jq -r '.author.login')
+
+          #   # echo "PR $number is $mergeable. PR by Author: $author. URL: $url "
+          #   echo "$url and $labels"
+
+          #   if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
+          #     gh pr edit $url --add-label "stale"
+          #     gh pr comment $url --body ":wave: Hi, @$author!<br><br>We detected conflicts in your PR against the base branch :speak_no_evil:<br>You may want to sync :arrows_counterclockwise: your branch with upstream!<br><br>Ref: [Syncing Your Branch](https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch)"
+          #   fi
+          # done
+
+      # - name: 'Remove Label "stale"'
+      #   run: |
+      #     for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
+      #       decoded=$(echo $item | base64 --decode)
+      #       mergeable=$(echo $decoded | jq -r '.mergeable')
+      #       labels=$(echo $decoded | jq -r '.labels[].name')
+      #       url=$(echo $decoded | jq -r '.url')
+
+      #       if [[ "$mergeable" != "CONFLICTING" && "$labels" == *"stale"* ]]; then
+      #         gh pr edit $url --remove-label "stale"
+      #       fi
+      #     done
