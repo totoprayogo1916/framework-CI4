@@ -33,7 +33,7 @@ jobs:
       - id: getPR
         run: |
 
-          echo "${{needs.get-pr-list.outputs.PRs}} > list.json"
+          echo ${{needs.get-pr-list.outputs.PRs}} > list.json
 
           # Loop through the JSON array
           for item in $(cat list.json | jq -r '.[] | @base64'); do
