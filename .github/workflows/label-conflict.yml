@@ -27,39 +27,42 @@ jobs:
     needs: get-pr-list
     steps:
       - run: echo ${{needs.get-pr-list.outputs.PRs}}
-  # auto-comment-conflict:
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+ 
+  auto-comment-conflict:
+    runs-on: ubuntu-22.04
+    needs: get-pr-list
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
 
-  #     - id: getPR
-  #       run: |
+      - id: getPR
+        run: |
   #         echo $(gh pr list -L 100 --json number,mergeable,url,labels,author) > input.json
 
   #         # Loop through the JSON array
-  #         for item in $(cat input.json | jq -r '.[] | @base64'); do
-  #           decoded=$(echo $item | base64 --decode)
-  #           mergeable=$(echo $decoded | jq -r '.mergeable')
-  #           number=$(echo $decoded | jq -r '.number')
-  #           url=$(echo $decoded | jq -r '.url')
-  #           labels=$(echo $decoded | jq -r '.labels[].name')
-  #           author=$(echo $decoded | jq -r '.author.login')
+          for item in $(cat ${{needs.get-pr-list.outputs.PRs}} | jq -r '.[] | @base64'); do
+            decoded=$(echo $item | base64 --decode)
+            mergeable=$(echo $decoded | jq -r '.mergeable')
+            number=$(echo $decoded | jq -r '.number')
+            url=$(echo $decoded | jq -r '.url')
+            labels=$(echo $decoded | jq -r '.labels[].name')
+            author=$(echo $decoded | jq -r '.author.login')
 
-  #           # echo "PR $number is $mergeable. URL: $url"
+            # echo "PR $number is $mergeable. URL: $url"
 
-  #           if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
-  #             # add label "stale"
-  #             gh pr edit $url --add-label "stale"
+            if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
+              # add label "stale"
+              gh pr edit $url --add-label "stale"
 
-  #             # add comment
-  #             gh pr comment $url --body "${{ env.COMMENT}}"
-  #           fi
-  #         done
-  #       env:
+              # add comment
+              gh pr comment $url --body "${{ env.COMMENT}}"
+            fi
+          done
+        env:
   #         GITHUB_TOKEN: ${{ github.token }}
-  #         COMMENT: >
-  #           :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
-  #           We detected conflicts in your PR against the base branch :speak_no_evil:<br>
-  #           You may want to sync :arrows_counterclockwise: your branch with upstream!<br>
-  #           Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
+          COMMENT: >
+            :wave: Hi, @${{ github.event.pull_request.user.login }}!<br><br>
+            We detected conflicts in your PR against the base branch :speak_no_evil:<br>
+            You may want to sync :arrows_counterclockwise: your branch with upstream!<br>
+            Ref: https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch
