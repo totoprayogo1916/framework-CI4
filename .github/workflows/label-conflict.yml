@@ -28,7 +28,7 @@ jobs:
         env:
           PR_LIST: ${{ steps.PR-list.outputs.pr_list }}
         run: |
-          for item in $(echo "$PR_LIST" | jq -c '.[] | @base64'); do
+          for item in $(cat "$PR_LIST" | jq -c '.[] | @base64'); do
             pr=$(echo $item | base64 --decode)
             mergeable=$(echo $pr | jq -r '.mergeable')
             labels=$(echo $pr | jq -r '.labels[].name')
