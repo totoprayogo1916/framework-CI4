@@ -4,6 +4,7 @@ The development team and community take all security issues seriously. **Please 
 
 ## Reporting a Vulnerability
 
+
 Thank you for improving the security of our code! Any assistance in removing security flaws will be acknowledged.
 
 **Please report security flaws by emailing the development team directly: security@codeigniter.com**.
