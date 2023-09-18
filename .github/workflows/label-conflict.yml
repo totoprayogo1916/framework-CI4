@@ -19,10 +19,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get PR List
+        id: getPRs
+        run: |
+          gh pr list -L 100 --json number,mergeable,url,labels,author
+
+      - name: Get PR List
         id: getPR
         run: |
-          gh pr list -L 100 --json number,mergeable,url,labels,author > pr_list.json
-          echo "PRs=pr_list.json" >> $GITHUB_OUTPUT
+          echo "PRs=${{steps.getPRs.outputs.getPRs}}" >> $GITHUB_OUTPUT
+
   auto-comment-conflict:
     runs-on: ubuntu-22.04
     needs: prList
