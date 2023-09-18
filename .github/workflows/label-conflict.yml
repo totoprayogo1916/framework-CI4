@@ -21,8 +21,7 @@ jobs:
       - name: Get list of PR
         id: getPR
         run: |
-          PR_LIST: $(gh pr list -L 100 --json number,mergeable,url,labels,author)
-          echo "pr_list=$PR_LIST" >> $GITHUB_OUTPUT
+          echo "pr_list=$(gh pr list -L 100 --json number,mergeable,url,labels,author) > input.json" >> $GITHUB_OUTPUT
 
   # auto-comment-conflict:
   #   runs-on: ubuntu-22.04
