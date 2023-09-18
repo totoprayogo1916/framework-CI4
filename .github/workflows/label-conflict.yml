@@ -35,17 +35,21 @@ jobs:
           for pr in $(echo "$PR_LIST" | jq -c '.[]'); do
             # number=$(echo "$pr" | jq -r '.number')
             mergeable=$(echo "$pr" | jq -r '.mergeable')
+            author=$(echo "$pr" | jq -r '.author.login')
             labels=$(echo "$pr" | jq -c '.labels[].name' | tr -d '[]"')
 
-            echo "$mergeable with $labels"
+            echo "$mergeable by $author with $labels"
 
-            # if [ "$mergeable" != "CONFLICTING" ] && [[ ! "$labels" == *"stale"* ]]; then
+            if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
               # Add "stale" label
               # gh pr label add $number --label stale
+              url=$(echo "$pr" | jq -r '.url')
+
+              echo "$url is coflict"
 
               # Add a comment
               # gh pr comment $number --body "This PR has conflicts and has been labeled as stale."
-            # fi
+            fi
           done
 
         # echo "$url is $mergeable by $author with labels";
