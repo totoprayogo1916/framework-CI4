@@ -29,6 +29,7 @@ jobs:
             decoded=$(echo $item | base64 --decode)
             mergeable=$(echo $decoded | jq -r '.mergeable')
             labels=$(echo $decoded | jq -r '.labels[].name')
+            number=$(echo $decoded | jq -r '.number')
             url=$(echo $decoded | jq -r '.url')
             author=$(echo $decoded | jq -r '.author.login')
 
