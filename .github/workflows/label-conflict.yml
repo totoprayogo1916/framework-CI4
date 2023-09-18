@@ -20,21 +20,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get PR List
-        env:
-          JSON: $(gh pr list -L 100 --json mergeable,url,labels,author)
-          # GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "gh pr list -L 100 --json mergeable,url,labels,author"
 
       - name: Get PR List
-        run: |
-          gh pr list -L 100 --json mergeable,url,labels,author > pr_list.json
+        id: PR-list
+        run: echo "pr_list=$((gh pr list -L 100 --json mergeable,url,labels,author))" >> $GITHUB_OUTPUT
 
       - name: 'Add label "stale" and comment'
         run: |
 
-          echo 'A'
+
+          echo ${{ toJson(steps.PR-list.outputs.pr_list) }}
 
           # echo
           # for pr in $(echo "pr_list.json" | jq -c '.[]'); do
