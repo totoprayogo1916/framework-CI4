@@ -30,8 +30,8 @@ jobs:
         run: |
 
           for pr in $PR_LIST; do
-            # number=$(echo "$pr" | jq -r '.number')
-            echo $pr.mergeable
+            mergeable=$(echo "$pr" | jq -r '.mergeable')
+            echo "$mergeable"
 
             # if [ "$mergeable" != "MERGEABLE" ] && [[ ! "$labels" == *"stale"* ]]; then
             # fi
