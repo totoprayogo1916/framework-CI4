@@ -12,33 +12,21 @@ jobs:
   prList:
     runs-on: ubuntu-22.04
     outputs:
-      PR_LIST: ${{ steps.getPR.outputs.PRs }}
+      PR_LIST: ${{ steps.pr-json.outputs.PRs }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Get PR List
-        id: getPRs
         run: |
-          gh pr list -L 100 --json number,mergeable,url,labels,author > list.json
+          gh pr list -L 100 --json number,mergeable,url,labels,author > pr_list.json
 
-      - name: Get PR List
-        id: getPR
-        run: |
-          echo "PRs=list.json" >> $GITHUB_OUTPUT
-
-  auto-comment-conflict:
-    runs-on: ubuntu-22.04
-    needs: prList
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - id: pr-json
+        run: echo "PRs=pr_list.json" >> $GITHUB_OUTPUT
 
       - name: Add label "stale" and comment
         run: |
-          echo ${{needs.prList.outputs.PR_LIST}} > pr_list.json
           for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
             decoded=$(echo $item | base64 --decode)
             mergeable=$(echo $decoded | jq -r '.mergeable')
