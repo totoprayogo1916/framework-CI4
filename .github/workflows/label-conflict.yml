@@ -1,9 +1,11 @@
 name: Auto Comment Conflicts
 
 on:
-  # pull_request:
-  schedule:
-  - cron: '*/15 * * * *'
+  push:
+    branches:
+      - 'develop'
+      - '4.**'
+
 
 permissions:
   contents: read
@@ -38,23 +40,7 @@ jobs:
               echo "$url by $author"
             fi
           done
-          
-          # for item in $(cat pr_list.json | jq -r '.[] | @base64'); do
-          #   decoded=$(echo $item | base64 --decode)
-          #   mergeable=$(echo $decoded | jq -r '.mergeable')
-          #   labels=$(echo $decoded | jq -r '.labels[].name')
-          #   # number=$(echo $decoded | jq -r '.number')
-          #   url=$(echo $decoded | jq -r '.url')
-          #   author=$(echo $decoded | jq -r '.author.login')
 
-          #   # echo "PR $number is $mergeable. PR by Author: $author. URL: $url "
-          #   echo "$url and $labels"
-
-          #   if [[ "$mergeable" == "CONFLICTING" && "$labels" != *"stale"* ]]; then
-          #     gh pr edit $url --add-label "stale"
-          #     gh pr comment $url --body ":wave: Hi, @$author!<br><br>We detected conflicts in your PR against the base branch :speak_no_evil:<br>You may want to sync :arrows_counterclockwise: your branch with upstream!<br><br>Ref: [Syncing Your Branch](https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/workflow.md#pushing-your-branch)"
-          #   fi
-          # done
 
       # - name: 'Remove Label "stale"'
       #   run: |
